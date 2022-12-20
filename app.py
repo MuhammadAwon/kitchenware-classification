@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 headers = {
-    "authorization": st.secrets["auth_token"],
+    "authorization": st.secrets["auth_key"],
     "content-type": "application/json"
 }
 
