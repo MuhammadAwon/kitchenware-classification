@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+python-dotenv = "*"
 
 [dev-packages]
 numpy = "*"
@@ -17,7 +18,7 @@ requests = "*"
 keras-tuner = "*"
 tensorflow = "==2.9"
 streamlit = "==1.14.0"
-python-dotenv = "*"
+tflite-runtime = {path = "./tflite-runtime-binaries/tflite_runtime-2.5.0.post1-cp39-cp39-win_amd64.whl"}
 
 [requires]
 python_version = "3.9"
