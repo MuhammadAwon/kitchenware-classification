@@ -161,7 +161,7 @@ img_url = radio_func()
 def predict_class(url):
     API_URL = os.getenv('API_URL')
     data_url = {'url': url}
-    result = requests.post(API_URL, json=data_url, headers=headers).json()
+    result = requests.post(API_URL, json=data_url).json()
     return result
 
 
