@@ -8,6 +8,10 @@ from dotenv import load_dotenv
 # Load environment variable
 load_dotenv()
 
+headers = {
+    "authorization": st.secrets["auth_token"],
+    "content-type": "application/json"
+}
 
 
 # Title and subtitles
@@ -157,7 +161,7 @@ img_url = radio_func()
 def predict_class(url):
     API_URL = os.getenv('API_URL')
     data_url = {'url': url}
-    result = requests.post(API_URL, json=data_url).json()
+    result = requests.post(API_URL, json=data_url, headers=headers).json()
     return result
 
 
