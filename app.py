@@ -8,10 +8,6 @@ from dotenv import load_dotenv
 # Load environment variable
 load_dotenv()
 
-headers = {
-    "authorization": st.secrets["auth_key"],
-    "content-type": "application/json"
-}
 
 
 # Title and subtitles
