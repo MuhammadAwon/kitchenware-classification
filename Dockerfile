@@ -1,11 +1,19 @@
-# AWS lambda base image
-FROM public.ecr.aws/lambda/python:3.9
+# syntax=docker/dockerfile:1.2
+FROM python:3.9-slim
 
-RUN pip install Pillow
-# Install tflite for aws linux architecture
-RUN pip install https://github.com/alexeygrigorev/tflite-aws-lambda/raw/main/tflite/tflite_runtime-2.7.0-cp39-cp39-linux_x86_64.whl
+RUN pip install pipenv
 
-COPY ./models/kitchenware-model.tflite .
-COPY ./scripts/lambda_function.py .
+WORKDIR /app
 
-CMD [ "lambda_function.lambda_handler" ]
+# must be installed using pip
+RUN pip install --extra-index-url https://google-coral.github.io/py-repo/ tflite_runtime
+
+COPY ["Pipfile", "Pipfile.lock", "./"]
+
+RUN pipenv install --system --deploy
+
+COPY ["predict.py", "kitchenware-model.tflite", "./"]
+
+EXPOSE 9696
+
+ENTRYPOINT ["gunicorn", "--bind=0.0.0.0:9696", "predict:app"]
