@@ -19,6 +19,9 @@ keras-tuner = "*"
 tensorflow = "==2.9"
 streamlit = "==1.14.0"
 tflite-runtime = {path = "./tflite-runtime-binaries/tflite_runtime-2.5.0.post1-cp39-cp39-win_amd64.whl"}
+flask = "*"
+gunicorn = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.9"
