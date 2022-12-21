@@ -12,7 +12,7 @@ COPY ["Pipfile", "Pipfile.lock", "./"]
 
 RUN pipenv install --system --deploy
 
-COPY ["predict.py", "kitchenware-model.tflite", "./"]
+COPY ["./scripts/predict.py", "./models/kitchenware-model.tflite", "./"]
 
 EXPOSE 9696
 
