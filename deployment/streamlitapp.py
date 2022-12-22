@@ -1,11 +1,15 @@
+import os
 import requests
 import base64
 import streamlit as st
 
 from PIL import Image
+from dotenv import load_dotenv
 
+# Load environment variable
+load_dotenv()
 
-
+api_endpoint = os.getenv('API_URL')
 
 # Title and subtitles
 st.markdown('<h1 style="color:black;">Kitchenware Image Classification</h1>', unsafe_allow_html=True)
@@ -151,9 +155,8 @@ img_url = radio_func()
 
 # Function to make prediction from aws lambda and gateway api
 def predict_class(url):
-    API_URL = 'http://localhost:9696/predict'
     data_url = {'url': url}
-    result = requests.post(API_URL, json=data_url).json()
+    result = requests.post(api_endpoint, json=data_url).json()
     return result
 
 
