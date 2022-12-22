@@ -95,32 +95,32 @@ such as displaying food at a buffet or displaying a collection of decorative pla
 
 
 
-# Function to get background image to streamlit
-@st.cache(allow_output_mutation=True)
-def get_base64_of_bin_file(bin_file):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
+# # Function to get background image to streamlit
+# @st.cache(allow_output_mutation=True)
+# def get_base64_of_bin_file(bin_file):
+#     with open(bin_file, 'rb') as f:
+#         data = f.read()
+#     return base64.b64encode(data).decode()
 
-# Function to set background image
-def set_img_as_page_bg(img_file):
-    bin_str = get_base64_of_bin_file(img_file)
-    page_bg_img = '''
-    <style>
-    .stApp {
-    background-image: url("data:image/png;base64,%s");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: scroll; # doesn't work
-    }
-    </style>
-    ''' % bin_str
+# # Function to set background image
+# def set_img_as_page_bg(img_file):
+#     bin_str = get_base64_of_bin_file(img_file)
+#     page_bg_img = '''
+#     <style>
+#     .stApp {
+#     background-image: url("data:image/png;base64,%s");
+#     background-size: cover;
+#     background-repeat: no-repeat;
+#     background-attachment: scroll; # doesn't work
+#     }
+#     </style>
+#     ''' % bin_str
 
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-    return
+#     st.markdown(page_bg_img, unsafe_allow_html=True)
+#     return
 
-# Call function to set the background image
-set_img_as_page_bg('./bg-image.jpg')
+# # Call function to set the background image
+# set_img_as_page_bg('./bg-image.jpg')
 
 
 
