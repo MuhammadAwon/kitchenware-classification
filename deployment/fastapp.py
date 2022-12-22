@@ -2,8 +2,9 @@
 # coding: utf-8
 
 
-
 # Required libraries
+import os
+import uvicorn
 import numpy as np
 import tflite_runtime.interpreter as tflite
 
@@ -12,9 +13,13 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 from PIL import Image
 from PIL.Image import Resampling
-from flask import Flask, request, jsonify
+from fastapi import FastAPI
+from pydantic import BaseModel
 
 
+
+# Initialize model
+MODEL_NAME = os.getenv('MODEL_NAME', './kitchenware-model.tflite')
 
 # List of classes the model was trained to predict
 classes = ['cup', 'fork', 'glass', 'knife', 'plate', 'spoon']
@@ -37,8 +42,8 @@ def image_from_url(url, target_size=(256, 256)):
         stream = BytesIO(buffer)
         img = Image.open(stream)
         return preprocess_image(img, target_size)
-    except HTTPError as e:
-        print(f'{e}. Please try another URL!')
+    except HTTPError as err:
+        print(f'{err}. Please try another URL!')
 
 # Function to read image from path before preprocessing
 def image_from_path(path, target_size=(256, 256)):
@@ -47,7 +52,7 @@ def image_from_path(path, target_size=(256, 256)):
 
 
 # Initalize interpreter
-interpreter = tflite.Interpreter(model_path='../models/kitchenware-model.tflite')
+interpreter = tflite.Interpreter(model_path=MODEL_NAME)
 # Allocate memory
 interpreter.allocate_tensors()
 # Get input index
@@ -76,19 +81,29 @@ def predict(img):
     return dict(zip(classes, float_preds))
 
 
-# Create flask app
-app = Flask(__name__)
-
-# api handler
-@app.route('/predict', methods=['POST'])
-def api_handler():
-    request_data = request.get_json()
-    img_url = request_data['url']
-    result = predict(img_url)
-    class_prediction = max(result, key=result.get)
-    return jsonify(class_prediction)
+# Create fastapi app
+app = FastAPI()
 
 
+# Check data validity
+class Data(BaseModel):
+    url: str
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=9696)
+# API endpoint for making prediction against the request received from client
+@app.post('/predict')
+async def request_handler(data: Data):
+    # Convert JSON request data in to python dict
+    data_dict = data.dict()
+    # Extrant image url from data_dict
+    img_url = data_dict['url']
+    # Make predictions on image
+    preds = predict(img_url)
+    # Extract class name with highest probability in preds
+    pred_class = max(preds, key=preds.get)
+    # Return response back to the client
+    return pred_class
+
+
+
+if __name__=='__main__':
+    uvicorn.run('fastapp:app', host='localhost', port=9696, reload=True)
