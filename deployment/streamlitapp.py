@@ -120,7 +120,7 @@ def set_img_as_page_bg(img_file):
     return
 
 # Call function to set the background image
-set_img_as_page_bg('bg-image.jpg')
+set_img_as_page_bg('./bg-image.jpg')
 
 
 
