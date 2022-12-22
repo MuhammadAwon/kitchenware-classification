@@ -28,9 +28,9 @@ glass_url = 'https://m.media-amazon.com/images/I/81B88+ZiRIL._AC_UL320_.jpg'
 plate_url = 'https://m.media-amazon.com/images/I/A14F1QVaPNL._AC_UL320_.jpg'
 
 
-# Classes options to choose
-# first element as empty string to hide preselected radio button
-classes = ['', 'Knife', 'Fork', 'Spoon', 'Cup', 'Glass', 'Plate', 'Image URL']
+# # Classes options to choose
+# # first element as empty string to hide preselected radio button
+# classes = ['', 'Knife', 'Fork', 'Spoon', 'Cup', 'Glass', 'Plate', 'Image URL']
 
 
 # ChatGPT generated definition of predicted classes
@@ -124,12 +124,16 @@ such as displaying food at a buffet or displaying a collection of decorative pla
 
 
 
+# Classes options to choose
+# first element as empty string to hide preselected radio button
+classes = ['', 'Knife', 'Fork', 'Spoon', 'Cup', 'Glass', 'Plate', 'Image URL']
+
 # Define radio buttons for classes
 radio_button = st.radio('Choose image class or enter image url to make prediction', classes)
 # Function to create radio button for classes
 def radio_func():
     if radio_button == '':
-        url = None
+        url = ''
     elif radio_button == 'Knife':
         url = knife_url
     elif radio_button == 'Fork':
