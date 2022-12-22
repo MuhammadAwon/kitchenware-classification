@@ -126,15 +126,13 @@ such as displaying food at a buffet or displaying a collection of decorative pla
 
 # Classes options to choose
 # first element as empty string to hide preselected radio button
-classes = ['', 'Knife', 'Fork', 'Spoon', 'Cup', 'Glass', 'Plate', 'Image URL']
+classes = ['Knife', 'Fork', 'Spoon', 'Cup', 'Glass', 'Plate', 'Image URL']
 
 # Define radio buttons for classes
 radio_button = st.radio('Choose image class or enter image url to make prediction', classes)
 # Function to create radio button for classes
 def radio_func():
-    if radio_button == '':
-        url = ''
-    elif radio_button == 'Knife':
+    if radio_button == 'Knife':
         url = knife_url
     elif radio_button == 'Fork':
         url = fork_url
