@@ -4,15 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = "*"
-uvicorn = "*"
-pillow = "*"
-requests = "*"
-streamlit = "==1.14"
-python-dotenv = "*"
+streamlit = "*"
 
 [dev-packages]
 tflite-runtime = {path = "./../tflite-runtime-binaries/tflite_runtime-2.5.0.post1-cp39-cp39-win_amd64.whl"}
+python-dotenv = "*"
+requests = "*"
 
 [requires]
 python_version = "3.9"

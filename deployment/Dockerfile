@@ -1,24 +1,16 @@
-FROM python:3.9-slim
+# AWS lambda base image
+FROM public.ecr.aws/lambda/python:3.9
 
-# Install pipenv
-RUN pip install pipenv
 
-# Create working directory
-WORKDIR /app
-
-# Copy Pipfile and Pipfile.loc files
-COPY Pipfile Pipfile.lock /app/
-# Install required packages (into the system and not in the venv)
-RUN pipenv install --system --deploy
-
-# Install tflite_runtime package (have to install it using pip)
-RUN pip install --extra-index-url https://google-coral.github.io/py-repo/ tflite_runtime
+# Install tflite for aws linux architecture and Pillow for image processing
+RUN pip install https://github.com/alexeygrigorev/tflite-aws-lambda/raw/main/tflite/tflite_runtime-2.7.0-cp39-cp39-linux_x86_64.whl
+RUN pip install Pillow
 
 # Copy required files to run the app
-COPY fastapp.py kitchenware-model.tflite /app/
+COPY [ "lambda_function.py", "img_preprocessor.py", "kitchenware-model.tflite", "./" ]
 
 # Expose port to start the server
-EXPOSE 9696
+EXPOSE 8080
 
-# Command the run the app
-CMD ["python", "-m", "uvicorn", "fastapp:app", "--host", "0.0.0.0", "--port", "9696"]
+# Command to invoke lambda
+CMD [ "lambda_function.lambda_handler" ]

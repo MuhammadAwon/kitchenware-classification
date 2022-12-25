@@ -1,5 +1,4 @@
 .ipynb_checkpoints
 datasets/
 models/
-registry
 .env
