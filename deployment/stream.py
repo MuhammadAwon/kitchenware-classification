@@ -93,13 +93,6 @@ such as displaying food at a buffet or displaying a collection of decorative pla
 """
 
 
-# # Background Image
-# filename = 'bg-image.jpg'
-# # Store background image on Deta drive
-# with open(filename, 'rb') as image_file:
-#     drive.put(filename, image_file)
-
-
 # Function to get background image from Deta drive
 @st.cache(allow_output_mutation=True)
 def get_bg_image(bin_file):
@@ -209,15 +202,50 @@ def upload_and_retrieve_image(image):
         return image_data
 
 
+# Function to create buttons for image url (radio and text_input)
+def url_buttons():
+    # Create a radio button for each option (empty string to hide first radio button)
+    selected_option = st.radio('Choose an option for prediction and press "Enter url" button',
+                              ('', 'Knife', 'Fork', 'Spoon', 'Cup', 'Glass', 'Plate'),
+                              index=0, key='radio_button')
+
+    # Set the default URL for each option
+    url_map = {
+        '': None,
+        'Knife': 'https://m.media-amazon.com/images/I/71FtjejRbvL._AC_UL320_.jpg',
+        'Fork': 'https://m.media-amazon.com/images/I/51j88-h2NZL.jpg',
+        'Spoon': 'https://m.media-amazon.com/images/I/51Dvu6GiM8L._AC_UL320_.jpg',
+        'Cup': 'https://m.media-amazon.com/images/I/61Bq3L4gbSL._AC_UL320_.jpg',
+        'Glass': 'https://m.media-amazon.com/images/I/81B88+ZiRIL._AC_UL320_.jpg',
+        'Plate': 'https://m.media-amazon.com/images/I/A14F1QVaPNL._AC_UL320_.jpg'
+    }
+
+    # Default URL for the selected option
+    url = url_map[selected_option]
+
+    # Add a text input field for the custom URL
+    custom_url = st.text_input('Or enter custom URL and press "Enter url" button')
+
+    # Check if a custom URL was entered
+    if custom_url:
+        # Use the custom URL
+        url = custom_url
+
+    return url
+
+
 # Create a button 'upload_image' to add an image from the local computer 
 # and 'upload_image_button' to indicate when the image is uploaded
-upload_image = st.file_uploader('Upload an image', type=['png', 'jpg', 'jpeg'])
+upload_image = st.file_uploader('Upload an image and press "Upload image" button', type=['png', 'jpg', 'jpeg'])
 upload_image_button = st.button('Upload image')
 
 # Create a button 'image_url' to get image url from the user
 # and 'image_url_button' to indicate when the url is provided
-image_url = st.text_input('Enter an image URL')
+image_url = url_buttons()
 image_url_button = st.button('Enter url')
+
+if st.button('Reset'):
+    image_url = None
 
 # Set the session states with the default values of the button to False 
 st.session_state['upload_image_clicked'] = False
@@ -240,59 +268,59 @@ else:
 
 # Get the image from the clicked button (from path or url)
 image = get_image(upload_image_clicked, image_url_clicked, upload_image, image_url)
-
 # Check the source of the image
 image_source = check_image_source(image, upload_image_clicked, image_url_clicked)
 
 
-
 # Function to display image and its predicted class
-# def main():
-#     # Create two columns to display
-#     c1, c2 = st.columns(2)
-#     if image is not None:
-#         if image_source == 'Upload image':
-#             img = Image.open(image)
-#             img = img.resize((300, 350))
-#             c1.header('Input Image')
-#             c1.image(img)
-#             # If the image is coming from path
-#             img_path = upload_and_retrieve_image(image)
-#             pred = request_path_pred(img_path)
-#         else:
-#             # Image is from url
-#             response = requests.get(image, stream=True).raw
-#             img = Image.open(response)
-#             img = img.resize((300, 350))
-#             c1.header('Input Image')
-#             c1.image(img)
-#             pred = request_url_pred(image)
+def main():
+    # Create two columns to display
+    c1, c2 = st.columns(2)
+    if image is not None:
+        if image_source == 'Upload image':
+            img = Image.open(image)
+            img = img.resize((300, 350))
+            c1.header('Input Image')
+            c1.image(img)
+            # If the image is coming from path
+            img_path = upload_and_retrieve_image(image)
+            pred = request_path_pred(img_path)
+        else:
+            # Image is from url
+            response = requests.get(image, stream=True).raw
+            img = Image.open(response)
+            img = img.resize((300, 350))
+            c1.header('Input Image')
+            c1.image(img)
+            pred = request_url_pred(image)
 
-#         # Display prediction on second column
-#         c2.header('Output')
-#         if pred == 'knife':
-#             c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😀')
-#             c2.write(def_knife)
-#         if pred == 'fork':
-#             c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😃')
-#             c2.write(def_fork)
-#         if pred == 'spoon':
-#             c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😄')
-#             c2.write(def_spoon)
-#         if pred == 'glass':
-#             c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😁')
-#             c2.write(def_glass)
-#         if pred == 'cup':
-#             c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😆')
-#             c2.write(def_cup)
-#         if pred == 'plate':
-#             c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😋')
-#             c2.write(def_plate)
+        # Display prediction on second column
+        c2.header('Output')
+        if pred == 'knife':
+            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😀')
+            c2.write(def_knife)
+        if pred == 'fork':
+            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😃')
+            c2.write(def_fork)
+        if pred == 'spoon':
+            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😄')
+            c2.write(def_spoon)
+        if pred == 'glass':
+            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😁')
+            c2.write(def_glass)
+        if pred == 'cup':
+            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😆')
+            c2.write(def_cup)
+        if pred == 'plate':
+            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😋')
+            c2.write(def_plate)
+        
+        c2.write('**Please press "Reset" button for new prediction.**')
 
 
 
-# if __name__=='__main__':
-#     main()
+if __name__=='__main__':
+    main()
 
 
 # Delete image from local path that was stored in Deta drive
@@ -303,3 +331,32 @@ if image is not None:
        image.type == 'image/jpeg')):
         drive.delete(image.name)
 
+
+# Add kitchenware kaggle competition link in the footer
+footer = """<style>
+a:link , a:visited{
+color: ligthblue;
+background-color: transparent;
+text-decoration: underline;
+}
+
+a:hover,  a:active {
+color: blue;
+background-color: transparent;
+text-decoration: underline;
+}
+
+.footer {
+position: absolute;
+display:block;
+padding:120px;
+background-color: ligthgrey;
+color: darkblue;
+text-align: center;
+}
+</style>
+<div class="footer">
+<p>To participate in the Kitchware Classification competition <a style='display: block; text-align: center;' href="https://www.kaggle.com/competitions/kitchenware-classification" target="_blank">Click here</a></p>
+</div>
+"""
+st.markdown(footer,unsafe_allow_html=True)
