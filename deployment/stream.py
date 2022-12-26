@@ -93,11 +93,11 @@ such as displaying food at a buffet or displaying a collection of decorative pla
 """
 
 
-# Background Image
-filename = 'bg-image.jpg'
-# Store background image on Deta drive
-with open(filename, 'rb') as image_file:
-    drive.put(filename, image_file)
+# # Background Image
+# filename = 'bg-image.jpg'
+# # Store background image on Deta drive
+# with open(filename, 'rb') as image_file:
+#     drive.put(filename, image_file)
 
 
 # Function to get background image from Deta drive
@@ -128,7 +128,7 @@ def set_img_as_page_bg(img_file):
     return
 
 # Call function to set the background image
-set_img_as_page_bg(filename)
+set_img_as_page_bg('bg-image.jpg')
 
 
 # Function to return predicted class of image from local machine
