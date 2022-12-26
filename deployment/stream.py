@@ -26,23 +26,26 @@ st.markdown('<h3 style="color:gray;"> cup, fork, glass, knife, plate, spoon</h3>
 st.markdown('<style>div[role="radiogroup"]>:first-child{display: none !important;}</style>', unsafe_allow_html=True)
 
 
-# Function to return predicted class of image from local machine
-def request_path_pred(img_path, url=api_endpoint):
-    # Check for image path
-    if img_path.type == 'image/jpeg' or img_path.type == 'image/png':
-        # Convert streamlit UploadedFile object into python string
-        img_str = img_path.name
-        if img_str.endswith('.jpg') or img_str.endswith('.png'):
-            with open(img_str, 'rb') as f:
-                image_data = f.read()
-            image_data = base64.b64encode(image_data).decode('utf-8')
-            headers = {'Content-Type': 'application/json'}
-            data = {'image_data': image_data}
-            # Send POST request
-            response = requests.post(url, json=data, headers=headers)
+# # Function to return predicted class of image from local machine
+# def request_path_pred(img_path, url=api_endpoint):
+#     # Check for image path
+#     if img_path.type == 'image/jpeg' or img_path.type == 'image/png':
+#         # Convert streamlit UploadedFile object into python string
+#         img_str = img_path.name
+#         if img_str.endswith('.jpg') or img_str.endswith('.png'):
+#             with open(img_str, 'rb') as f:
+#                 image_data = f.read()
+#             image_data = base64.b64encode(image_data).decode('utf-8')
+#             headers = {'Content-Type': 'application/json'}
+#             data = {'image_data': image_data}
+#             # Send POST request
+#             response = requests.post(url, json=data, headers=headers)
 
-    # Parse response into JSON
-    return response.json()
+#     # Parse response into JSON
+#     return response.json()
+
+
+
 
 
 # Function to return predicted class from image url
@@ -175,6 +178,45 @@ image = get_image(upload_image_clicked, image_url_clicked, upload_image, image_u
 
 # Check the source of the image
 image_source = check_image_source(image, upload_image_clicked, image_url_clicked)
+
+
+###############
+
+# # Function to return predicted class of image from local machine
+# def request_path_pred(img_path, url=api_endpoint):
+#     # Check for image path
+#     if img_path.type == 'image/jpeg' or img_path.type == 'image/png':
+#         # Convert streamlit UploadedFile object into python string
+#         img_str = img_path.name
+#         if img_str.endswith('.jpg') or img_str.endswith('.png'):
+#             with open(img_str, 'rb') as f:
+#                 image_data = f.read()
+#             image_data = base64.b64encode(image_data).decode('utf-8')
+#             headers = {'Content-Type': 'application/json'}
+#             data = {'image_data': image_data}
+#             # Send POST request
+#             response = requests.post(url, json=data, headers=headers)
+
+#     # Parse response into JSON
+#     return response.json()
+
+def request_path_pred(img_path, url=api_endpoint):
+    img = img_path.name
+    with open(img, 'rb') as image:
+        image_data = image.read()
+    image_data_b64 = base64.b64encode(image_data).decode('utf-8')
+    data = {'image_data': image_data_b64}
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, json=data, headers=headers)
+    return response.json()
+
+
+# st.write(image_source)
+# st.write(request_path_pred(image))
+
+# st.write(image.name)
+
+##############
 
 
 # Function to display image and its predicted class

@@ -31,20 +31,20 @@ print(response.json())
 
 
 
-# # Image path
-# img_path = 'img2.jpg'
+# Image path
+img_path = 'img2.jpg'
 
-# # Read image in bytes object
-# with open(img_path, 'rb') as image:
-#     image_data = image.read()
+# Read image in bytes object
+with open(img_path, 'rb') as image:
+    image_data = image.read()
 
-# # Encode image data as base64
-# image_data_b64 = base64.b64encode(image_data).decode('utf-8')
+# Encode image data as base64
+image_data_b64 = base64.b64encode(image_data).decode('utf-8')
 
-# # POST request as json object
-# data = {'image_data': image_data_b64}
+# POST request as json object
+data = {'image_data': image_data_b64}
 
-# # Send the POST request as json
-# headers = {'Content-Type': 'application/json'}
-# response = requests.post(api_url, json=data, headers=headers)
-# print(response.json())
+# Send the POST request as json
+headers = {'Content-Type': 'application/json'}
+response = requests.post(api_url, json=data, headers=headers)
+print(response.json())
