@@ -92,10 +92,6 @@ such as displaying food at a buffet or displaying a collection of decorative pla
 
 # Background Image
 filename = 'bg-image.jpg'
-# # Store background image on Deta drive
-# with open(filename, 'rb') as image_file:
-#     drive.put(filename, image_file)
-
 
 # Function to get background image from Deta drive
 @st.cache(allow_output_mutation=True)
