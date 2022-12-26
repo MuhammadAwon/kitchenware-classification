@@ -242,8 +242,9 @@ def main():
         c2.header('Output')
         c2.write(pred)
 
-if __name__=='__main__':
-    main()
+main()
+# if __name__=='__main__':
+#     main()
 
 
 
