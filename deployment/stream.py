@@ -199,7 +199,7 @@ image_source = check_image_source(image, upload_image_clicked, image_url_clicked
 
 #     # Parse response into JSON
 #     return response.json()
-
+st.set_option('deprecation.showfileUploaderEncoding', False)
 def request_path_pred(img_path, url=api_endpoint):
     img = img_path.name
     with open(img, 'rb') as image:
@@ -242,9 +242,8 @@ def main():
         c2.header('Output')
         c2.write(pred)
 
-main()
-# if __name__=='__main__':
-#     main()
+if __name__=='__main__':
+    main()
 
 
 
