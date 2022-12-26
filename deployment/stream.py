@@ -1,4 +1,5 @@
 import os
+import io
 import requests
 import base64
 import numpy as np
@@ -6,15 +7,24 @@ import streamlit as st
 
 from PIL import Image
 from PIL.Image import Resampling
-from io import StringIO 
 from dotenv import load_dotenv
+from deta import Deta
 from requests.exceptions import MissingSchema
 
 
 
-# Load environment variable
+# Load environment variables
 load_dotenv()
-# API url
+
+# Initialize project (Deta)
+project_key = os.getenv('PROJECT_KEY')
+project = Deta(project_key)
+
+# Define Deta drive to store image
+drive_name = 'images'
+drive = project.Drive(drive_name)
+
+# Lambda API Gateway
 api_endpoint = os.getenv('API_URL')
 
 
@@ -26,26 +36,18 @@ st.markdown('<h3 style="color:gray;"> cup, fork, glass, knife, plate, spoon</h3>
 st.markdown('<style>div[role="radiogroup"]>:first-child{display: none !important;}</style>', unsafe_allow_html=True)
 
 
-# # Function to return predicted class of image from local machine
-# def request_path_pred(img_path, url=api_endpoint):
-#     # Check for image path
-#     if img_path.type == 'image/jpeg' or img_path.type == 'image/png':
-#         # Convert streamlit UploadedFile object into python string
-#         img_str = img_path.name
-#         if img_str.endswith('.jpg') or img_str.endswith('.png'):
-#             with open(img_str, 'rb') as f:
-#                 image_data = f.read()
-#             image_data = base64.b64encode(image_data).decode('utf-8')
-#             headers = {'Content-Type': 'application/json'}
-#             data = {'image_data': image_data}
-#             # Send POST request
-#             response = requests.post(url, json=data, headers=headers)
+# Function to return predicted class of image from local machine
+def request_path_pred(img_path, url=api_endpoint):
+    # Encode the image data
+    image_data = base64.b64encode(img_path).decode('utf-8')
+    # Headers and data information for POST request
+    headers = {'Content-Type': 'application/json'}
+    data = {'image_data': image_data}
+    # Send POST request
+    response = requests.post(url, json=data, headers=headers)
 
-#     # Parse response into JSON
-#     return response.json()
-
-
-
+    # Parse response into JSON
+    return response.json()
 
 
 # Function to return predicted class from image url
@@ -61,7 +63,7 @@ def request_url_pred(img_url, url=api_endpoint):
     return response.json()
 
 
-# Function to get image from path or from input url
+# Function to get image from path or from user input url
 def get_image(upload_image_clicked, image_url_clicked, upload_image, image_url):
     if upload_image_clicked:
         # Set the session state of the upload_image button to True
@@ -82,7 +84,7 @@ def get_image(upload_image_clicked, image_url_clicked, upload_image, image_url):
         return None
 
 
-# Function to check image source
+# Function to check image source (path or url)
 def check_image_source(image, upload_image_clicked, image_url_clicked):
     if image is not None:
         if upload_image_clicked:
@@ -91,6 +93,27 @@ def check_image_source(image, upload_image_clicked, image_url_clicked):
             return 'Input image'
     else:
         return 'No image'
+
+
+# Function to save and load image from Deta drive
+def upload_and_retrieve_image(image):
+    # Upload image
+    if image is not None:
+        # Get the bytes value of the image
+        bytes_data = image.getvalue()        
+        # Upload image to the Deta Drive
+        drive.put(image.name, data=bytes_data)
+    
+    # Download image
+    if image is not None:
+        # Retrieve image from the Deta Drive
+        download_image = drive.get(image.name)
+        # Read the image data from download_image
+        image_data = download_image.read()
+
+        return image_data
+
+
 # ###################################################################
 # ## EXPERIMENTING
 # # Radio button function to selection image url or ask user for custom url for prediction
@@ -133,38 +156,28 @@ def check_image_source(image, upload_image_clicked, image_url_clicked):
 # #####################################
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-# Create an 'upload_image' to add an image from the local computer 
+# Create a button 'upload_image' to add an image from the local computer 
 # and 'upload_image_button' to indicate when the image is uploaded
-upload_image = st.file_uploader('Upload an image', type=['png', 'jpg'])
+upload_image = st.file_uploader('Upload an image', type=['png', 'jpg', 'jpeg'])
 upload_image_button = st.button('Upload image')
 
-# Create an 'image_url' to get image url from the user
+# Create a button 'image_url' to get image url from the user
 # and 'image_url_button' to indicate when the url is provided
 image_url = st.text_input('Enter an image URL')
 image_url_button = st.button('Enter url')
 
-# Set the default values of the button clicked flags to False 
+# Set the session states with the default values of the button to False 
 st.session_state['upload_image_clicked'] = False
 st.session_state['image_url_clicked'] = False
 
+# When 'Upload image' button is clicked
 if upload_image_button:
     # Set the upload_image_clicked flag to True
     upload_image_clicked = True
 else:
     upload_image_clicked = False
 
+# When 'Enter url' button is clicked
 if image_url_button:
     # Set the image_url_clicked flag to True
     image_url_clicked = True
@@ -172,52 +185,11 @@ else:
     image_url_clicked = False
 
 
-
-# Get the image from the clicked button
+# Get the image from the clicked button (from path or url)
 image = get_image(upload_image_clicked, image_url_clicked, upload_image, image_url)
 
 # Check the source of the image
 image_source = check_image_source(image, upload_image_clicked, image_url_clicked)
-
-
-###############
-
-# # Function to return predicted class of image from local machine
-# def request_path_pred(img_path, url=api_endpoint):
-#     # Check for image path
-#     if img_path.type == 'image/jpeg' or img_path.type == 'image/png':
-#         # Convert streamlit UploadedFile object into python string
-#         img_str = img_path.name
-#         if img_str.endswith('.jpg') or img_str.endswith('.png'):
-#             with open(img_str, 'rb') as f:
-#                 image_data = f.read()
-#             image_data = base64.b64encode(image_data).decode('utf-8')
-#             headers = {'Content-Type': 'application/json'}
-#             data = {'image_data': image_data}
-#             # Send POST request
-#             response = requests.post(url, json=data, headers=headers)
-
-#     # Parse response into JSON
-#     return response.json()
-st.set_option('deprecation.showfileUploaderEncoding', False)
-def request_path_pred(img_path, url=api_endpoint):
-    img = img_path.name
-    with open(img, 'rb') as image:
-        image_data = image.read()
-    return image_data
-    # image_data_b64 = base64.b64encode(image_data).decode('utf-8')
-    # data = {'image_data': image_data_b64}
-    # headers = {'Content-Type': 'application/json'}
-    # response = requests.post(url, json=data, headers=headers)
-    # return response.json()
-
-
-st.write(image_source)
-st.write(request_path_pred(image))
-
-# st.write(image.name)
-
-##############
 
 
 # Function to display image and its predicted class
@@ -230,8 +202,11 @@ def main():
             img = img.resize((300, 350))
             c1.header('Input Image')
             c1.image(img)
-            pred = request_path_pred(image)
+            # If the image is coming from path
+            img_path = upload_and_retrieve_image(image)
+            pred = request_path_pred(img_path)
         else:
+            # Image is from url
             response = requests.get(image, stream=True).raw
             img = Image.open(response)
             img = img.resize((300, 350))
@@ -252,6 +227,78 @@ if __name__=='__main__':
 
 
 
+#########################
+
+# if image is not None:
+#     # get the bytes value of the image
+#     bytes_data = image.getvalue()
+#     # upload image to deta uring put with filename
+#     drive.put(image.name, data=bytes_data)
+
+
+# # download image
+# download_image = drive.get(image.name)
+
+# # read the downloaded image (returns image bytes)
+# image_data = download_image.read()
+# # dont run this (will crash page)
+# image_data = base64.b64encode(image_data).decode('utf-8')
+
+
+# st.write(type(image_data))
+
+# # open image as PIL object
+# img = Image.open(io.BytesIO(image_data))
+
+# st.write(img.mode)
+# st.write(img.format)
+# st.image(img)
+
+
+# # Function to upload and download image using Deta Drive
+# def upload_and_retrieve_image(image):
+#     # Upload image
+#     if image is not None:
+#         # Get the bytes value of the image
+#         bytes_data = image.getvalue()        
+#         # Upload image to the Deta Drive
+#         drive.put(image.name, data=bytes_data)
+    
+#     # Download image
+#     if image is not None:
+#         # Retrieve image from the Deta Drive
+#         download_image = drive.get(image.name)
+#         # Read the image data from download_image
+#         image_data = download_image.read()
+#         # Create a stream from the image data
+#         stream = io.BytesIO(image_data)
+#         # Open image using PIL
+#         img = Image.open(stream)
+
+#         return img
+
+# img = upload_and_retrieve_image(image)
+# st.write(type(img))
+# if img.format.lower() == 'jpeg':
+#     st.write('correct')
 
 
 
+
+# # Function to return predicted class of image from local machine
+# def request_path_pred(img_path, url=api_endpoint):
+#     # Check for image path
+#     if img_path.type == 'image/jpeg' or img_path.type == 'image/png':
+#         # Convert streamlit UploadedFile object into python string
+#         img_str = img_path.name
+#         if img_str.endswith('.jpg') or img_str.endswith('.png'):
+#             with open(img_str, 'rb') as f:
+#                 image_data = f.read()
+#             image_data = base64.b64encode(image_data).decode('utf-8')
+#             headers = {'Content-Type': 'application/json'}
+#             data = {'image_data': image_data}
+#             # Send POST request
+#             response = requests.post(url, json=data, headers=headers)
+
+#     # Parse response into JSON
+#     return response.json()

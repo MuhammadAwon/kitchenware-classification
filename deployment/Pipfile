@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 streamlit = "*"
 python-dotenv = "*"
+deta = "*"
 
 [dev-packages]
 tflite-runtime = {path = "./../tflite-runtime-binaries/tflite_runtime-2.5.0.post1-cp39-cp39-win_amd64.whl"}
