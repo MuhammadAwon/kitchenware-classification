@@ -28,8 +28,6 @@ api_endpoint = os.getenv('API_URL')
 st.markdown('<h1 style="color:black;">Kitchenware Image Classification</h1>', unsafe_allow_html=True)
 st.markdown('<h2 style="color:gray;">The image classification model classifies image into following categories:</h2>', unsafe_allow_html=True)
 st.markdown('<h3 style="color:gray;"> cup, fork, glass, knife, plate, spoon</h3>', unsafe_allow_html=True)
-# Hide the first pre-selected radio button
-st.markdown('<style>div[role="radiogroup"]>:first-child{display: none !important;}</style>', unsafe_allow_html=True)
 
 
 # ChatGPT generated definition of predicted classes (for fun)
@@ -91,6 +89,12 @@ forks, knives, and spoons. Plates are an essential part of the table setting at 
 are also commonly used in everyday meals. In addition to serving food, plates can also be used for decorative purposes,
 such as displaying food at a buffet or displaying a collection of decorative plates on a wall.
 """
+
+# Background Image
+filename = 'bg-image.jpg'
+# Store background image on Deta drive
+with open(filename, 'rb') as image_file:
+    drive.put(filename, image_file)
 
 
 # Function to get background image from Deta drive
@@ -202,38 +206,6 @@ def upload_and_retrieve_image(image):
         return image_data
 
 
-# Function to create buttons for image url (radio and text_input)
-def url_buttons():
-    # Create a radio button for each option (empty string to hide first radio button)
-    selected_option = st.radio('Choose an option for prediction and press "Enter url" button',
-                              ('', 'Knife', 'Fork', 'Spoon', 'Cup', 'Glass', 'Plate'),
-                              index=0, key='radio_button')
-
-    # Set the default URL for each option
-    url_map = {
-        '': None,
-        'Knife': 'https://m.media-amazon.com/images/I/71FtjejRbvL._AC_UL320_.jpg',
-        'Fork': 'https://m.media-amazon.com/images/I/51j88-h2NZL.jpg',
-        'Spoon': 'https://m.media-amazon.com/images/I/51Dvu6GiM8L._AC_UL320_.jpg',
-        'Cup': 'https://m.media-amazon.com/images/I/61Bq3L4gbSL._AC_UL320_.jpg',
-        'Glass': 'https://m.media-amazon.com/images/I/81B88+ZiRIL._AC_UL320_.jpg',
-        'Plate': 'https://m.media-amazon.com/images/I/A14F1QVaPNL._AC_UL320_.jpg'
-    }
-
-    # Default URL for the selected option
-    url = url_map[selected_option]
-
-    # Add a text input field for the custom URL
-    custom_url = st.text_input('Or enter custom URL and press "Enter url" button')
-
-    # Check if a custom URL was entered
-    if custom_url:
-        # Use the custom URL
-        url = custom_url
-
-    return url
-
-
 # Create a button 'upload_image' to add an image from the local computer 
 # and 'upload_image_button' to indicate when the image is uploaded
 upload_image = st.file_uploader('Upload an image and press "Upload image" button', type=['png', 'jpg', 'jpeg'])
@@ -241,7 +213,7 @@ upload_image_button = st.button('Upload image')
 
 # Create a button 'image_url' to get image url from the user
 # and 'image_url_button' to indicate when the url is provided
-image_url = url_buttons()
+image_url = st.text_input('Enter custom URL and press "Enter url" button')
 image_url_button = st.button('Enter url')
 
 if st.button('Reset'):
@@ -315,7 +287,7 @@ def main():
             c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😋')
             c2.write(def_plate)
         
-        c2.write('**Please press "Reset" button for new prediction.**')
+        c2.write('**Press the "Reset" button to make a new prediction using an image URL or image path.**')
 
 
 
