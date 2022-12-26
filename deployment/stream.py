@@ -204,15 +204,16 @@ def request_path_pred(img_path, url=api_endpoint):
     img = img_path.name
     with open(img, 'rb') as image:
         image_data = image.read()
-    image_data_b64 = base64.b64encode(image_data).decode('utf-8')
-    data = {'image_data': image_data_b64}
-    headers = {'Content-Type': 'application/json'}
-    response = requests.post(url, json=data, headers=headers)
-    return response.json()
+    return image_data
+    # image_data_b64 = base64.b64encode(image_data).decode('utf-8')
+    # data = {'image_data': image_data_b64}
+    # headers = {'Content-Type': 'application/json'}
+    # response = requests.post(url, json=data, headers=headers)
+    # return response.json()
 
 
-# st.write(image_source)
-# st.write(request_path_pred(image))
+st.write(image_source)
+st.write(request_path_pred(image))
 
 # st.write(image.name)
 
