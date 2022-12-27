@@ -25,9 +25,9 @@ api_endpoint = os.getenv('API_URL')
 
 
 # Title and subtitles
-st.markdown('<h1 style="color:black;">Kitchenware Image Classification</h1>', unsafe_allow_html=True)
-st.markdown('<h2 style="color:gray;">The image classification model classifies image into following categories:</h2>', unsafe_allow_html=True)
-st.markdown('<h3 style="color:gray;"> cup, fork, glass, knife, plate, spoon</h3>', unsafe_allow_html=True)
+st.markdown('<h1 style="color:white;">Kitchenware Image Classification</h1>', unsafe_allow_html=True)
+st.markdown('<h2 style="color:lightgray;">The image classification model classifies image into following categories:</h2>', unsafe_allow_html=True)
+st.markdown('<h3 style="color:lightgray;"> cup, fork, glass, knife, plate, spoon</h3>', unsafe_allow_html=True)
 
 
 # ChatGPT generated definition of predicted classes (for fun)
@@ -92,6 +92,10 @@ such as displaying food at a buffet or displaying a collection of decorative pla
 
 # Background Image
 filename = 'bg-image.jpg'
+
+# # Store background image on Deta drive
+# with open(filename, 'rb') as image_file:
+#     drive.put(filename, image_file)
 
 # Function to get background image from Deta drive
 @st.cache(allow_output_mutation=True)
@@ -204,16 +208,23 @@ def upload_and_retrieve_image(image):
 
 # Create a button 'upload_image' to add an image from the local computer 
 # and 'upload_image_button' to indicate when the image is uploaded
-upload_image = st.file_uploader('Upload an image and press "Upload image" button', type=['png', 'jpg', 'jpeg'])
-upload_image_button = st.button('Upload image')
+with st.form('image from path', clear_on_submit=True):
+        # original_title = '<p style="font-family:Open Sans; color:white; font-size: 20px;">Upload an image and press "UPLOAD IMAGE" button</p>'
+        # md = st.markdown(original_title, unsafe_allow_html=True)
+        upload_image = st.file_uploader(':orange[Upload an image and press "UPLOAD IMAGE" button]', type=['png', 'jpg', 'jpeg'])
+        upload_image_button = st.form_submit_button('UPLOAD IMAGE')
+
+if upload_image_button and upload_image is not None:
+    st.markdown('<h5 style="color:white;font-size:18px;">Making prediction on the image from path...</h5>', unsafe_allow_html=True)
 
 # Create a button 'image_url' to get image url from the user
 # and 'image_url_button' to indicate when the url is provided
-image_url = st.text_input('Enter custom URL and press "Enter url" button')
-image_url_button = st.button('Enter url')
+with st.form('image from url', clear_on_submit=True):
+        image_url = st.text_input(':orange[Enter custom URL and press "ENTER URL" button]')
+        image_url_button = st.form_submit_button('ENTER URL')
 
-if st.button('Reset'):
-    image_url = None
+if image_url_button and image_url is not None:
+    st.markdown('<h5 style="color:white;font-size:18px;">Making prediction on the image from URL...</h5>', unsafe_allow_html=True)
 
 # Set the session states with the default values of the button to False 
 st.session_state['upload_image_clicked'] = False
@@ -248,7 +259,7 @@ def main():
         if image_source == 'Upload image':
             img = Image.open(image)
             img = img.resize((300, 350))
-            c1.header('Input Image')
+            c1.markdown('<h2 style="color:white;font-size:40px;">Input</h2>', unsafe_allow_html=True)
             c1.image(img)
             # If the image is coming from path
             img_path = upload_and_retrieve_image(image)
@@ -258,33 +269,31 @@ def main():
             response = requests.get(image, stream=True).raw
             img = Image.open(response)
             img = img.resize((300, 350))
-            c1.header('Input Image')
+            c1.markdown('<h2 style="color:white;font-size:40px;">Input</h2>', unsafe_allow_html=True)
             c1.image(img)
             pred = request_url_pred(image)
 
         # Display prediction on second column
-        c2.header('Output')
+        c2.markdown('<h2 style="color:white;font-size:40px;">Output</h2>', unsafe_allow_html=True)
         if pred == 'knife':
-            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😀')
-            c2.write(def_knife)
+            c2.markdown(f'<h3 style="color:white;font-size:32px;">The predicted class is {pred}. That\'s what ChatGPT has to say about it...😀</h3>', unsafe_allow_html=True)
+            c2.markdown(f'<h5 style="color:lightgrey;font-size:18px;font-family: \'Roman\', sans-serif;">{def_knife}</h5>', unsafe_allow_html=True)
         if pred == 'fork':
-            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😃')
-            c2.write(def_fork)
+            c2.markdown(f'<h3 style="color:white;font-size:32px;">The predicted class is {pred}. That\'s what ChatGPT has to say about it...😃</h3>', unsafe_allow_html=True)
+            c2.markdown(f'<h5 style="color:lightgrey;font-size:18px;font-family: \'Roman\', sans-serif;">{def_fork}</h5>', unsafe_allow_html=True)
         if pred == 'spoon':
-            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😄')
-            c2.write(def_spoon)
+            c2.markdown(f'<h3 style="color:white;font-size:32px;">The predicted class is {pred}. That\'s what ChatGPT has to say about it...😄</h3>', unsafe_allow_html=True)
+            c2.markdown(f'<h5 style="color:lightgrey;font-size:18px;font-family: \'Roman\', sans-serif;">{def_spoon}</h5>', unsafe_allow_html=True)
         if pred == 'glass':
-            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😁')
-            c2.write(def_glass)
+            c2.markdown(f'<h3 style="color:white;font-size:32px;">The predicted class is {pred}. That\'s what ChatGPT has to say about it...😁</h3>', unsafe_allow_html=True)
+            c2.markdown(f'<h5 style="color:lightgrey;font-size:18px;font-family: \'Roman\', sans-serif;">{def_glass}</h5>', unsafe_allow_html=True)
         if pred == 'cup':
-            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😆')
-            c2.write(def_cup)
+            c2.markdown(f'<h3 style="color:white;font-size:32px;">The predicted class is {pred}. That\'s what ChatGPT has to say about it...😆</h3>', unsafe_allow_html=True)
+            c2.markdown(f'<h5 style="color:lightgrey;font-size:18px;font-family: \'Roman\', sans-serif;">{def_cup}</h5>', unsafe_allow_html=True)
         if pred == 'plate':
-            c2.subheader(f'The predicted class is {pred}. That\'s what ChatGPT has to say about it...😋')
-            c2.write(def_plate)
+            c2.markdown(f'<h3 style="color:white;font-size:32px;">The predicted class is {pred}. That\'s what ChatGPT has to say about it...😋</h3>', unsafe_allow_html=True)
+            c2.markdown(f'<h5 style="color:lightgrey;font-size:18px;font-family: \'Roman\', sans-serif;">{def_plate}</h5>', unsafe_allow_html=True)
         
-        c2.write('**Press the "Reset" button to make a new prediction using an image URL or image path.**')
-
 
 
 if __name__=='__main__':
@@ -309,7 +318,7 @@ text-decoration: underline;
 }
 
 a:hover,  a:active {
-color: blue;
+color: white;
 background-color: transparent;
 text-decoration: underline;
 }
@@ -319,7 +328,7 @@ position: absolute;
 display:block;
 padding:120px;
 background-color: ligthgrey;
-color: darkblue;
+color: white;
 text-align: center;
 }
 </style>
@@ -328,3 +337,5 @@ text-align: center;
 </div>
 """
 st.markdown(footer,unsafe_allow_html=True)
+
+
