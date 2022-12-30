@@ -91,7 +91,7 @@ such as displaying food at a buffet or displaying a collection of decorative pla
 """
 
 # Background Image
-filename = 'bg-image.jpg'
+filename = '../assets/bg-image.jpg'
 
 # # Store background image on Deta drive
 # with open(filename, 'rb') as image_file:
@@ -209,8 +209,6 @@ def upload_and_retrieve_image(image):
 # Create a button 'upload_image' to add an image from the local computer 
 # and 'upload_image_button' to indicate when the image is uploaded
 with st.form('image from path', clear_on_submit=True):
-        # original_title = '<p style="font-family:Open Sans; color:white; font-size: 20px;">Upload an image and press "UPLOAD IMAGE" button</p>'
-        # md = st.markdown(original_title, unsafe_allow_html=True)
         upload_image = st.file_uploader(':orange[Upload an image and press "UPLOAD IMAGE" button]', type=['png', 'jpg', 'jpeg'])
         upload_image_button = st.form_submit_button('UPLOAD IMAGE')
 
