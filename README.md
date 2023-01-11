@@ -280,3 +280,42 @@ This should return the successful response with the class name of the image.
 
 ### Expose the Lambda Function with API Gateway
 
+We create the lambda function for our docker image, now we need to expose it using AWS API Gateway:
+
+- Search for api gateway > select *Create API* button > Select *REST API* > from Settings (API name) > *Create API*
+- Select *Create Resource* from the drop-down of *Actions* button > Resource Name (e.g., `classify`, this will be the endpoint of the url) > *Create Resource*
+- Select *Create Method* from *Actions* button > Select *POST* from drop-down of `/classify` > Select ok and then POST > select *Lambda Function* from the *Integration type*, choose the right *Lambda Region*, and *Lambda Function* name > *Save*
+- For testing purpose click on yellow *TEST* button > Request Body (url of the image for prediction) e.g. `{"image_url", "https://m.media-amazon.com/images/I/51c5OmSdwWL._AC_UL320_.jpg"}` > Hit *Test*
+- Select *Deploy API* from *Actions* button > *Deployment stage* (New Stage) and *Stage name* (test) > *Deploy*
+  <img src="assets/api1.png" width=800 height=400/>
+- Copy the *Invoke URL* and paste in the `test.py`, also be sure to add `/classify` at the end of the url since our resource name is classify, e.g., `https://7riusm11dl.execute-api.ap-south-1.amazonaws.com/test/classify`
+
+---
+
+## Deploy the App on Streamlit Cloud
+
+Since we have already installed the packages [python-dotenv](https://pypi.org/project/python-dotenv/) and [Deta](https://www.deta.sh/) from the `Pipfile` all we need is to setup `.env` file:
+
+- Create a file by the `.env` in the deployment directory
+- Get the [project key](https://docs.deta.sh/docs/faqs/#what-are-all-the-different-keys-for) from the Deta
+- Add our api url from AWS gateway and project key from Deta in the `.env` file. Make sure the names are set as `API_URL` and `PROJECT_KEY` as shown in the image below:
+  <img src="assets/env1.png" width=900 height=450/>
+- Push the code to GitHub and sign in to [Streamlit Cloud](https://streamlit.io/cloud)
+- Select *New app* and configure the app for deployment. Also make sure to include `API_URL` and `PROJECT_KEY` in the *Secrets* using **Advanced settings** button. Finally, select *Deploy!* to launch
+  <img src="assets/env2.png" width=700 height=450/>
+  <img src="assets/app1.png" width=800 height=450/>
+  <img src="assets/app2.png" width=800 height=450/>
+  <img src="assets/app3.png" width=800 height=450/>
+  <img src="assets/app4.png" width=800 height=450/>
+
+--- 
+
+## To-Do
+
+- Add session state functionality in the `stream.py`
+
+---
+
+## Issues
+
+If you encounter any issues or have feedback, feel free to [open a new issue](https://github.com/MuhammadAwon/kitchenware-classification/issues).
